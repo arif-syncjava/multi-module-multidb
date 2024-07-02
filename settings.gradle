@@ -1,0 +1,4 @@
+rootProject.name = 'multi-module-multidb'
+include 'application'
+include 'database1'
+include 'database2'
