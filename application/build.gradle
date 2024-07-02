@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
     implementation project(':database1')
+    implementation project(':database2')
 }
