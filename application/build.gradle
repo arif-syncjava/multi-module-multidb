@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation project(':database2')
     implementation project(':database1')
+    implementation project(':database2')
 }

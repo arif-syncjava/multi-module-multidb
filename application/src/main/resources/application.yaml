@@ -1,16 +1,29 @@
 spring:
-      datasource:
-            url: jdbc:postgresql://localhost:5432/db3
+      datasource1:
+            url: jdbc:postgresql://localhost:5432/db1
             username: postgres
             password: 1234
       jpa:
+            open-in-view: false
             generate-ddl: true
-            hibernate:
-                  ddl-auto: update
-      sql:
-            init:
-                  mode: always
-                  schema-locations:
-                        - classpath:/schema.sql
-                  data-locations:
-                        - classpath:/data.sql
+
+
+
+
+#            jpa:
+#                  generate-ddl: true
+#                  hibernate:
+#                        ddl-auto: update
+#            sql:
+#                  init:
+#                        mode: always
+#                        continue-on-error: false
+#                        schema-locations:
+#                              - classpath:/schema.sql
+#                        data-locations:
+#                              - classpath:/data.sql
+#
+
+
+
+
