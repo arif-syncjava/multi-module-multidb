@@ -1,3 +1,7 @@
 plugins {
     id('common-dependency')
 }
+
+//dependencies {
+//    implementation project(":application")
+//}
