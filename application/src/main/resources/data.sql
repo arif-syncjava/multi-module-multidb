@@ -1,1 +1,0 @@
-INSERT INTO test (name) VALUES ('my-first-record');

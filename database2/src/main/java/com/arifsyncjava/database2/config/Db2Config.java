@@ -1,13 +1,18 @@
 package com.arifsyncjava.database2.config;
 
 import jakarta.persistence.EntityManagerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.datasource.init.DataSourceInitializer;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -42,29 +47,52 @@ public class Db2Config {
                 .build();
     }
 
+
+
     @Bean
-    EntityManagerFactoryBuilder managerFactoryBuilder2 () {
+    public DataSourceInitializer dataSourceInitializer(
+            @Qualifier ("db2DataSource") DataSource db2DataSource) {
+        DataSourceInitializer initializer = new DataSourceInitializer();
+        initializer.setDataSource(db2DataSource);
+        initializer.setDatabasePopulator(database2Populator());
+        return initializer;
+    }
 
-        JpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
-        final HashMap<String, Object> jpaProperties = new HashMap<>();
-        jpaProperties.put("jpa.hibernate.ddl-auto","update");
+    private DatabasePopulator database2Populator() {
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScript(new ClassPathResource("teacher-schema.sql"));
+        populator.addScript(new ClassPathResource("teacher-data.sql"));
+        return populator;
+    }
 
 
+    @Bean
+    EntityManagerFactoryBuilder entityManagerFactoryBuilder2 () {
         return new EntityManagerFactoryBuilder(
-                jpaVendorAdapter,
-                jpaProperties,
+                new HibernateJpaVendorAdapter(),
+                null,
                 null
         );
     }
 
+
+
     @Bean
     LocalContainerEntityManagerFactoryBean entityManager2 (
-            @Qualifier ("managerFactoryBuilder2") EntityManagerFactoryBuilder builder,
+            @Qualifier ("entityManagerFactoryBuilder2")
+             EntityManagerFactoryBuilder builder,
             @Qualifier ("db2DataSource") DataSource db2DataSource
     ) {
+
+
+        final HashMap<String, Object> jpaProperties = new HashMap<>();
+        jpaProperties.put("hibernate.hbm2ddl.auto","update");
+
+
         return builder
                 .dataSource(db2DataSource)
                 .packages("com.arifsyncjava.database2.model")
+                .properties(jpaProperties)
                 .build();
     }
 

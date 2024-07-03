@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
+import org.springframework.boot.sql.init.DatabaseInitializationMode;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
+import java.util.List;
 
 @Configuration
 @EnableTransactionManagement
@@ -40,24 +44,49 @@ public class Db1Config {
 
     @Bean
     DataSource db1DataSource (
-            @Qualifier("db1DataSourceProperties") DataSourceProperties db1DataSourceProperties ) {
+            @Qualifier("db1DataSourceProperties")
+            DataSourceProperties db1DataSourceProperties ) {
         return db1DataSourceProperties
                 .initializeDataSourceBuilder()
                 .build();
     }
 
+    @Bean
+    DataSourceScriptDatabaseInitializer database1Sql (
+           @Qualifier ("db1DataSource") DataSource db1DataSource
+    ) {
+        var settings = new DatabaseInitializationSettings();
+        settings.setMode(DatabaseInitializationMode.ALWAYS);
+        settings.setContinueOnError(false);
+        settings.setSchemaLocations(List.of(
+                "classpath:/customer-schema.sql",
+                "classpath:/customer-data.sql"
+        ));
+        return  new DataSourceScriptDatabaseInitializer(db1DataSource, settings);
+    }
+
+    @Bean
+    EntityManagerFactoryBuilder entityManagerFactoryBuilder1 () {
+        return new EntityManagerFactoryBuilder(
+                new HibernateJpaVendorAdapter(),
+                null,
+                null
+        );
+    }
+
+
 
     @Bean
     LocalContainerEntityManagerFactoryBean entityManagerFactory1 (
-                   @Autowired EntityManagerFactoryBuilder
-                    entityManagerFactoryBuilder,
+            @Qualifier ("entityManagerFactoryBuilder1")
+                   EntityManagerFactoryBuilder builder,
             @Qualifier ("db1DataSource") DataSource db1DataSource) {
 
         final HashMap<String, Object> jpaProperties = new HashMap<>();
         jpaProperties.put("hibernate.hbm2ddl.auto","update");
 
 
-        return  entityManagerFactoryBuilder
+        return  builder
                 .dataSource(db1DataSource)
                 .packages("com.arifsyncjava.database1.model")
                 .properties(jpaProperties)
