@@ -1,7 +1,6 @@
 package com.arifsyncjava.database2.config;
 
 import jakarta.persistence.EntityManagerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -14,7 +13,6 @@ import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -26,7 +24,7 @@ import java.util.HashMap;
 @EnableTransactionManagement
 @EnableJpaRepositories (
         basePackages = "com.arifsyncjava.database2.repository",
-        entityManagerFactoryRef = "entityManager2",
+        entityManagerFactoryRef = "entityManagerFactory2",
         transactionManagerRef = "transactionManager2"
 )
 @Configuration
@@ -70,7 +68,7 @@ public class Db2Config {
     EntityManagerFactoryBuilder entityManagerFactoryBuilder2 () {
         return new EntityManagerFactoryBuilder(
                 new HibernateJpaVendorAdapter(),
-                null,
+                new HashMap<>(),
                 null
         );
     }
@@ -78,7 +76,7 @@ public class Db2Config {
 
 
     @Bean
-    LocalContainerEntityManagerFactoryBean entityManager2 (
+    LocalContainerEntityManagerFactoryBean entityManagerFactory2(
             @Qualifier ("entityManagerFactoryBuilder2")
              EntityManagerFactoryBuilder builder,
             @Qualifier ("db2DataSource") DataSource db2DataSource
@@ -98,7 +96,7 @@ public class Db2Config {
 
     @Bean
     PlatformTransactionManager transactionManager2 (
-           @Qualifier ("entityManager2") EntityManagerFactory entityManagerFactory2) {
+           @Qualifier ("entityManagerFactory2") EntityManagerFactory entityManagerFactory2) {
         return new JpaTransactionManager(entityManagerFactory2);
     }
 

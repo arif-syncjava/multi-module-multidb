@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS tables ;
+CREATE TABLE tables (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR
+);

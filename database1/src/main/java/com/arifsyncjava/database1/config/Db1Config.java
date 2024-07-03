@@ -24,11 +24,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories (
-        basePackages = "com.arifsyncjava.database1.repository",
+        basePackages = {"com.arifsyncjava.database1.repository",
+                "com.arifsyncjava.database3.repository1"
+        },
         entityManagerFactoryRef = "entityManagerFactory1",
         transactionManagerRef = "transactionManager1"
 
@@ -69,7 +72,7 @@ public class Db1Config {
     EntityManagerFactoryBuilder entityManagerFactoryBuilder1 () {
         return new EntityManagerFactoryBuilder(
                 new HibernateJpaVendorAdapter(),
-                null,
+                new HashMap<>(),
                 null
         );
     }
@@ -88,7 +91,9 @@ public class Db1Config {
 
         return  builder
                 .dataSource(db1DataSource)
-                .packages("com.arifsyncjava.database1.model")
+                .packages(
+                        "com.arifsyncjava.database1.model",
+                        "com.arifsyncjava.database3.model1")
                 .properties(jpaProperties)
                 .build();
     }

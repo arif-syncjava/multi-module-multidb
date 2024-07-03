@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-@Order(2)
 public class Database2 implements ApplicationRunner {
 
     private final ProductRepository productRepository;

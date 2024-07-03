@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS randoms ;
+CREATE TABLE randoms (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR
+);

@@ -2,6 +2,6 @@ plugins {
     id('common-dependency')
 }
 
-//dependencies {
-//    implementation project(":application")
-//}
+dependencies {
+    implementation project(":database3")
+}
